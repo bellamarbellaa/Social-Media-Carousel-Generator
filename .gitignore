@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.local
+.trigger/
+dist/
+local-dry-run-output/
+*.log
+.DS_Store
+
+# Brand identity — real values are yours, never commit them.
+# Copy src/lib/brand.config.example.ts to brand.config.ts and fill it in.
+src/lib/brand.config.ts
+src/lib/logo.generated.ts
+src/lib/follow-bg.generated.ts
+assets/brand/
