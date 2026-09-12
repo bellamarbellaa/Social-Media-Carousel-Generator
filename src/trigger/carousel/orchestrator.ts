@@ -15,7 +15,7 @@ const READY_FOR_REVIEW_CAP = 5;
 
 export const carouselOrchestrator = schedules.task({
   id: "carousel-orchestrator",
-  cron: { pattern: "0 6 * * *", timezone: "Asia/Jakarta" },
+  cron: { pattern: "0,5,10 6 * * *", timezone: "Asia/Jakarta" }, // 3 runs: 06:00, 06:05, 06:10
   maxDuration: 900, // waits on every downstream stage via triggerAndWait
   run: async (_payload, { ctx }) => {
     const dryRun = process.env.DRY_RUN === "true";

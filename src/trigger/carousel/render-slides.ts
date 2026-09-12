@@ -14,6 +14,18 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/**
+ * Escapes HTML, then renders **bold** markers as <strong> and literal newlines as <br> —
+ * the copy prompt intentionally uses both for rhythm/emphasis (see brand.config.ts's
+ * VOICE_PROMPT), so this has to actually turn them into real formatting, not print
+ * literal asterisks.
+ */
+function formatRichText(text: string): string {
+  return escapeHtml(text)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br>");
+}
+
 function dotsHtml(index: number, total: number): string {
   const dots = Array.from({ length: total }, (_, i) =>
     i === index
@@ -34,8 +46,8 @@ function buildSlideHtml(
   index: number,
   total: number
 ): string {
-  const headline = escapeHtml(slide.headline);
-  const body = slide.body ? escapeHtml(slide.body) : "";
+  const headline = formatRichText(slide.headline);
+  const body = slide.body ? formatRichText(slide.body) : "";
 
   return `<!DOCTYPE html>
 <html>
@@ -67,11 +79,12 @@ function buildSlideHtml(
   .scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg,
-      rgba(10,10,10,0.55) 0%,
-      rgba(10,10,10,0.25) 30%,
-      rgba(10,10,10,0.35) 65%,
-      rgba(10,10,10,0.75) 100%);
+    /* Dusty Mauve → darker wine, same mood-backdrop gradient direction as the no-photo
+       system — gives warm-white text reliable contrast even over a busy photo, instead of
+       the old pure-ink scrim which was weakest exactly where the headline/body text sits. */
+    background: linear-gradient(160deg,
+      rgba(147,120,128,0.62) 0%,
+      rgba(110,75,87,0.72) 100%);
   }
   .content {
     position: relative;
@@ -106,8 +119,10 @@ function buildSlideHtml(
     flex: 1;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
     gap: 28px;
+    text-align: center;
   }
   .headline {
     font-weight: 800;
@@ -122,6 +137,10 @@ function buildSlideHtml(
     font-size: 34px;
     line-height: 1.4;
     text-wrap: balance;
+  }
+  .headline strong, .body-text strong {
+    font-weight: 800; /* only 400/600/800 are embedded, so bold always maps to 800 */
+    color: inherit;
   }
   .footer {
     display: flex;
