@@ -41,6 +41,24 @@ automatically. Without one, the carousel is just the 5 generated slides.
    `PUPPETEER_EXECUTABLE_PATH` (needed only in the dashboard, not locally), then
    `npx trigger.dev@latest deploy`.
 
+## Built with
+
+- **[Trigger.dev v4](https://trigger.dev)** — TypeScript background task orchestration,
+  scheduling, retries, and the orchestrator+processor pattern used across the 5 pipeline stages
+- **[Puppeteer](https://pptr.dev)** — headless Chrome rendering of HTML/CSS slide templates to PNG
+- **[Notion API](https://developers.notion.com)** — the task queue, review workflow, and file
+  uploads back to the source page
+- **[Pexels API](https://www.pexels.com/api/)** — stock photo search for slide backdrops
+- **An OpenAI-compatible LLM gateway** — copy generation and backdrop selection, model swappable
+  via one env var (`GATEWAY_MODEL`)
+- **[Zod](https://zod.dev)** — runtime schema validation on LLM output, so a malformed response
+  gets retried instead of rendering a broken carousel
+- **TypeScript** end to end
+
+Built with **[Claude Code](https://claude.com/claude-code)** (Anthropic's AI coding agent) as a
+pair-programming partner throughout — architecture, implementation, and the iterative
+prompt/rendering refinement that shaped the final voice and layout.
+
 ## Project structure
 
 ```
