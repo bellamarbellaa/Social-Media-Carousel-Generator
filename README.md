@@ -3,12 +3,12 @@
 A scheduled Trigger.dev automation that pulls the next queued topic from a Notion database,
 generates a 5-slide Instagram carousel (AI copy + Pexels stock photo backdrops, rendered with
 Puppeteer), and writes the finished slide PNGs plus caption back into that Notion page for
-review. Nothing is auto-published — every carousel lands in "Ready for Review" for a human to
-check before it goes anywhere.
+review. Nothing is auto-published since every carousel lands in "Ready for Review" state for a human to
+check in Notion before it goes anywhere.
 
 ## How it works
 
-1. A scheduled task (default: daily) queries a Notion database for the highest-priority row with
+1. A scheduled task (default: daily, 6.00 am Jakarta/Asia time) queries a Notion database for the first row with
    `Status = Queued`.
 2. It generates 5 slides of copy via an OpenAI-compatible gateway, validated against a strict
    JSON schema.
