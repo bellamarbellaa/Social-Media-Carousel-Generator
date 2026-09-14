@@ -338,7 +338,7 @@ export const renderSlides = schemaTask({
         const slide = payload.slides[i]!;
         const backdrop = payload.backdropDataUris[i]!;
         const html = buildSlideHtml(slide, backdrop, i, payload.slides.length);
-        await page.setContent(html, { waitUntil: "networkidle0" });
+        await page.setContent(html, { waitUntil: "load" });
         const buffer = await page.screenshot({ type: "png" });
         rendered.push({
           filename: `${ordinals[i] ?? `Slide${i + 1}`}.png`,
@@ -348,7 +348,7 @@ export const renderSlides = schemaTask({
 
       // Static "follow for more" closer — only when a logo is configured (brand.config.ts).
       if (LOGO_DATA_URI) {
-        await page.setContent(buildFollowSlideHtml(), { waitUntil: "networkidle0" });
+        await page.setContent(buildFollowSlideHtml(), { waitUntil: "load" });
         const followBuffer = await page.screenshot({ type: "png" });
         rendered.push({
           filename: `${ordinals[payload.slides.length] ?? `Slide${payload.slides.length + 1}`}.png`,
