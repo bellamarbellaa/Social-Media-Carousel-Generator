@@ -2,7 +2,8 @@ import { schemaTask } from "@trigger.dev/sdk";
 import { z } from "zod";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { appendCarouselContent, type PhotoCredit } from "../../lib/notion.js";
+import { appendCarouselContent, savePublishMetadata, type PhotoCredit } from "../../lib/notion.js";
+import { uploadImage } from "../../lib/supabase-storage.js";
 
 function slugify(text: string): string {
   return (
@@ -50,6 +51,13 @@ export const publishToNotion = schemaTask({
       payload.hashtags,
       payload.credits
     );
+
+    const slug = slugify(payload.topic);
+    const slideUrls = await Promise.all(
+      payload.slides.map((s) => uploadImage(Buffer.from(s.base64Png, "base64"), `${slug}/${s.filename}`))
+    );
+    const fullCaption = [payload.caption, "", payload.hashtags.join(" ")].join("\n");
+    await savePublishMetadata(payload.pageId, slideUrls, fullCaption);
 
     return { dryRun: false };
   },

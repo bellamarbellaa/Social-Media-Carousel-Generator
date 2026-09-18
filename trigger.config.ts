@@ -3,6 +3,7 @@ import { puppeteer } from "@trigger.dev/build/extensions/puppeteer";
 
 export default defineConfig({
   project: "proj_evrklkwbpghqlkodmyvs",
+  runtime: "node-22",
   dirs: ["./src/trigger"],
   maxDuration: 300, // seconds; orchestrator overrides this higher since it waits on every stage
   retries: {

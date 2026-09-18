@@ -21,7 +21,7 @@ function getDatabaseId(): string {
   return id;
 }
 
-async function notionFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function notionFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(`${NOTION_API}${path}`, {
     ...init,
     headers: {
@@ -131,6 +131,57 @@ export async function markReadyForReview(pageId: string): Promise<void> {
   await updateProperties(pageId, {
     Status: { status: { name: "Ready For Review" } },
     "Generated At": { date: { start: new Date().toISOString() } },
+  });
+}
+
+/** Public slide URLs + the ready-to-post caption, saved once a row is published to Notion. */
+export async function savePublishMetadata(
+  pageId: string,
+  slideUrls: string[],
+  fullCaption: string
+): Promise<void> {
+  await updateProperties(pageId, {
+    "Slide URLs": { rich_text: [{ type: "text", text: { content: slideUrls.join("\n") } }] },
+    "Full Caption": { rich_text: [{ type: "text", text: { content: fullCaption } }] },
+  });
+}
+
+export interface ReviewedRow {
+  pageId: string;
+  topic: string;
+  slideUrls: string[];
+  fullCaption: string;
+}
+
+/** Top "Reviewed" row, ready to publish to Instagram. */
+export async function getTopReviewedRow(): Promise<ReviewedRow | null> {
+  const rows = await queryByStatus("Reviewed");
+  const row = rows[0];
+  if (!row) return null;
+
+  const slideUrlsRaw = plainText(row.properties["Slide URLs"]?.rich_text);
+  return {
+    pageId: row.id,
+    topic: plainText(row.properties.Topic?.title),
+    slideUrls: slideUrlsRaw
+      .split("\n")
+      .map((url) => url.trim())
+      .filter(Boolean),
+    fullCaption: plainText(row.properties["Full Caption"]?.rich_text),
+  };
+}
+
+export async function markPosted(pageId: string, permalink: string): Promise<void> {
+  await updateProperties(pageId, {
+    Status: { status: { name: "Posted" } },
+    "Instagram Post URL": { url: permalink },
+    "Publish Error": { rich_text: [] },
+  });
+}
+
+export async function markPublishError(pageId: string, message: string): Promise<void> {
+  await updateProperties(pageId, {
+    "Publish Error": { rich_text: [{ type: "text", text: { content: message.slice(0, 1990) } }] },
   });
 }
 
